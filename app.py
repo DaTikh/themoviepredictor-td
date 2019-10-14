@@ -50,17 +50,19 @@ def findAll(table):
     disconnectDatabase(cnx)
     return results
 
-def insertQuery(args):
-    if args['context'] == "people":
-        return (f"INSERT INTO `{args['context']}` (`firstname`, `lastname`) VALUES ('{args['firstname']}', '{args['lastname']}')")
-    elif args['context'] == "movies":
-        print(args)
-        return (f"INSERT INTO `{args['context']}` (`title`, `duration`, `original_title`, `origin_country`) VALUES ('{args['title']}', {args['duration']}, '{args['original_title']}', '{args['origin_country']}')")
+def insertQuery(context, action, args):
+    if context == "people":
+        return (f"INSERT INTO `{context}` (`firstname`, `lastname`) VALUES ('{args['firstname']}', '{args['lastname']}')")
+    elif context == "movies":
+        if action == "insert":
+            return (f"INSERT INTO `{context}` (`title`, `duration`, `original_title`, `origin_country`) VALUES ('{args['title']}', {args['duration']}, '{args['original_title']}', '{args['origin_country']}')")
+        elif action == "import":
+            return (f"INSERT INTO `{context}` (`title`, `duration`, `original_title`, `rating`, `release_date`) VALUES ('{args['title']}', {args['duration']}, '{args['original_title']}', '{args['rating']}', '{args['release_date']}')")
 
-def insert(args):
+def insert(context, action, args):
     cnx = connectToDatabase()
     cursor = createCursor(cnx)
-    cursor.execute(insertQuery(args))
+    cursor.execute(insertQuery(context, action, args))
     cnx.commit()
     closeCursor(cursor)
     disconnectDatabase(cnx)
@@ -92,6 +94,9 @@ insert_parser.add_argument('--duration', help='Durée du film')
 insert_parser.add_argument('--original-title', help='Titre original')
 insert_parser.add_argument('--origin-country', help='Pays d\'origine')
 
+import_parser = action_subparser.add_parser('import', help='Importe un fichier CSV dans la base de données')
+import_parser.add_argument('--file', help='Chemin du fichier à importer')
+
 args = parser.parse_args()
 
 if args.context == "people":
@@ -112,7 +117,7 @@ if args.context == "people":
         for person in people:
             printPerson(person)
     if args.action == "insert":
-        insert(vars(args))
+        insert("people", "insert", vars(args)) 
 
 
 if args.context == "movies":
@@ -126,4 +131,9 @@ if args.context == "movies":
         for movie in movies:
             printMovie(movie)
     if args.action == "insert":
-        insert(vars(args))
+        insert("movies", "insert", vars(args))
+    if args.action == "import":
+        with open(args.file, 'r', encoding='utf-8', newline='\n') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                insert("movies", "import", row)
