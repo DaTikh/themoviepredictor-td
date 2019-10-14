@@ -52,12 +52,16 @@ def findAll(table):
 
 def insertQuery(context, action, args):
     if context == "people":
-        return (f"INSERT INTO `{context}` (`firstname`, `lastname`) VALUES ('{args['firstname']}', '{args['lastname']}')")
+        k = "`firstname`, `lastname`"
+        v = f"'{args.firstname}', '{args.lastname}'"
     elif context == "movies":
         if action == "insert":
-            return (f"INSERT INTO `{context}` (`title`, `duration`, `original_title`, `origin_country`) VALUES ('{args['title']}', {args['duration']}, '{args['original_title']}', '{args['origin_country']}')")
+            k = "`title`, `duration`, `original_title`, `origin_country`"
+            v = f"'{args.title}', {args.duration}, '{args.original_title}', '{args.origin_country}'"
         elif action == "import":
-            return (f"INSERT INTO `{context}` (`title`, `duration`, `original_title`, `rating`, `release_date`) VALUES ('{args['title']}', {args['duration']}, '{args['original_title']}', '{args['rating']}', '{args['release_date']}')")
+            k = "`title`, `duration`, `original_title`, `rating`, `release_date`"
+            v = f"'{args['title']}', {args['duration']}, '{args['original_title']}', '{args['rating']}', '{args['release_date']}'"
+    return (f"INSERT INTO `{context}` ({k}) VALUES ({v})")
 
 def insert(context, action, args):
     cnx = connectToDatabase()
@@ -123,7 +127,7 @@ if args.context == "people":
         for person in people:
             printPerson(person)
     if args.action == "insert":
-        insert("people", "insert", vars(args)) 
+        insert("people", "insert", args) 
 
 
 if args.context == "movies":
@@ -137,6 +141,6 @@ if args.context == "movies":
         for movie in movies:
             printMovie(movie)
     if args.action == "insert":
-        insert("movies", "insert", vars(args))
+        insert("movies", "insert", args)
     if args.action == "import":
         import_csv(args)
