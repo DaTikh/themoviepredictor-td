@@ -51,7 +51,11 @@ def findAll(table):
     return results
 
 def insertQuery(args):
-    return (f"INSERT INTO `{args['context']}` (`firstname`, `lastname`) VALUES ('{args['firstname']}', '{args['lastname']}')")
+    if args['context'] == "people":
+        return (f"INSERT INTO `{args['context']}` (`firstname`, `lastname`) VALUES ('{args['firstname']}', '{args['lastname']}')")
+    elif args['context'] == "movies":
+        print(args)
+        return (f"INSERT INTO `{args['context']}` (`title`, `duration`, `original_title`, `origin_country`) VALUES ('{args['title']}', {args['duration']}, '{args['original_title']}', '{args['origin_country']}')")
 
 def insert(args):
     cnx = connectToDatabase()
@@ -83,6 +87,10 @@ find_parser.add_argument('id' , help='Identifant à rechercher')
 insert_parser = action_subparser.add_parser('insert', help='Insère une entrée dans la base de données')
 insert_parser.add_argument('--firstname', help='Prénom')
 insert_parser.add_argument('--lastname', help='Nom de famille')
+insert_parser.add_argument('--title', help='Titre du film')
+insert_parser.add_argument('--duration', help='Durée du film')
+insert_parser.add_argument('--original-title', help='Titre original')
+insert_parser.add_argument('--origin-country', help='Pays d\'origine')
 
 args = parser.parse_args()
 
@@ -117,3 +125,5 @@ if args.context == "movies":
         movies = find("movies", movieId)
         for movie in movies:
             printMovie(movie)
+    if args.action == "insert":
+        insert(vars(args))
