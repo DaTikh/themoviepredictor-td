@@ -51,7 +51,7 @@ Dans ton bash tu peux tester le script avec par exemple les commandes suivantes.
 
 ```
   $ python app.py people insert --firstname "John" --lastname "Doe"
-  $ $ python app.py movies insert --title "Star Wars, épisode VIII : Les Derniers Jedi" --duration 152 --original-title "Star Wars: Episode VIII – The Last Jedi" --origin-country US
+  $ python app.py movies insert --title "Star Wars, épisode VIII : Les Derniers Jedi" --duration 152 --original-title "Star Wars: Episode VIII – The Last Jedi" --origin-country US
   $ python app.py movies import --file new_movies.csv
   $ python app.py people list
   $ python app.py movies list
