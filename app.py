@@ -50,11 +50,23 @@ def findAll(table):
     disconnectDatabase(cnx)
     return results
 
+def insertQuery(args):
+    return (f"INSERT INTO `{args['context']}` (`firstname`, `lastname`) VALUES ('{args['firstname']}', '{args['lastname']}')")
+
+def insert(args):
+    cnx = connectToDatabase()
+    cursor = createCursor(cnx)
+    cursor.execute(insertQuery(args))
+    cnx.commit()
+    closeCursor(cursor)
+    disconnectDatabase(cnx)
+
 def printPerson(person):
     print("#{}: {} {}".format(person['id'], person['firstname'], person['lastname']))
 
 def printMovie(movie):
     print("#{}: {} released on {}".format(movie['id'], movie['title'], movie['release_date']))
+
 
 parser = argparse.ArgumentParser(description='Process MoviePredictor data')
 
@@ -62,11 +74,15 @@ parser.add_argument('context', choices=['people', 'movies'], help='Le contexte d
 
 action_subparser = parser.add_subparsers(title='action', dest='action')
 
-list_parser = action_subparser.add_parser('list', help='Liste les entitÃ©es du contexte')
-list_parser.add_argument('--export' , help='Chemin du fichier exportÃ©')
+list_parser = action_subparser.add_parser('list', help='Liste les entités du contexte')
+list_parser.add_argument('--export' , help='Chemin du fichier exporté')
 
-find_parser = action_subparser.add_parser('find', help='Trouve une entitÃ© selon un paramÃ¨tre')
-find_parser.add_argument('id' , help='Identifant Ã  rechercher')
+find_parser = action_subparser.add_parser('find', help='Trouve une entité selon un paramètre')
+find_parser.add_argument('id' , help='Identifant à rechercher')
+
+insert_parser = action_subparser.add_parser('insert', help='Insère une entrée dans la base de données')
+insert_parser.add_argument('--firstname', help='Prénom')
+insert_parser.add_argument('--lastname', help='Nom de famille')
 
 args = parser.parse_args()
 
@@ -87,6 +103,9 @@ if args.context == "people":
         people = find("people", peopleId)
         for person in people:
             printPerson(person)
+    if args.action == "insert":
+        insert(vars(args))
+
 
 if args.context == "movies":
     if args.action == "list":  
