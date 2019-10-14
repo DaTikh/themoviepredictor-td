@@ -67,6 +67,12 @@ def insert(context, action, args):
     closeCursor(cursor)
     disconnectDatabase(cnx)
 
+def import_csv(args):
+    with open(args.file, 'r', encoding='utf-8', newline='\n') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            insert("movies", "import", row)
+
 def printPerson(person):
     print("#{}: {} {}".format(person['id'], person['firstname'], person['lastname']))
 
@@ -133,7 +139,4 @@ if args.context == "movies":
     if args.action == "insert":
         insert("movies", "insert", vars(args))
     if args.action == "import":
-        with open(args.file, 'r', encoding='utf-8', newline='\n') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                insert("movies", "import", row)
+        import_csv(args)
