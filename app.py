@@ -60,7 +60,7 @@ def insertQuery(context, action, args):
             v = f"'{args.title}', {args.duration}, '{args.original_title}', '{args.origin_country}'"
         elif action == "import":
             k = "`title`, `duration`, `original_title`, `rating`, `release_date`"
-            v = f"'{args['title']}', {args['duration']}, '{args['original_title']}', '{args['rating']}', '{args['release_date']}'"
+            v = f"'{args.title}', {args.duration}, '{args.original_title}', '{args.rating}', '{args.release_date}'"
     return (f"INSERT INTO `{context}` ({k}) VALUES ({v})")
 
 def insert(context, action, args):
@@ -75,6 +75,7 @@ def import_csv(args):
     with open(args.file, 'r', encoding='utf-8', newline='\n') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
+            row = argparse.Namespace(**row)
             insert("movies", "import", row)
 
 def printPerson(person):
