@@ -4,6 +4,7 @@
 """
 TheMoviePredictor script
 Author: Arnaud de Mouhy <arnaud@admds.net>
+Contributor: Baptiste Rogeon <baptiste.rogeon@gmail.com>
 """
 
 import mysql.connector
@@ -55,20 +56,17 @@ def argsSanitizer(args):
     context, action = args.context, args.action
     k, v = [*vars(args)], [*vars(args).values()]
     k.remove('context'), k.remove('action'), v.remove(context), v.remove(action)
-    for i, x in enumerate(v):
-        if x == None:
-            v[i] = 'NULL'
-    return k, v, context
+    return k, v, context, action
 
 def insertQuery(args):
-    k, v, context = argsSanitizer(args)
+    k, v, context, action = argsSanitizer(args)
     keys = list()
     values = list()
     for x in k:
         keys.append(x)
     for x in v:
-        if x == 'NULL':
-            values.append(x)
+        if x == None:
+            values.append('NULL')
         elif re.search("[a-zA-Z-]", x):
             values.append("'"f"{x}""'")
         elif re.search("[0-9]", x):
@@ -127,8 +125,8 @@ elif b_args.context == "movies":
     insert_parser.add_argument('--duration', help='Durée du film', required=True)
     insert_parser.add_argument('--original-title', help='Titre original', required=True)
     insert_parser.add_argument('--origin-country', help='Pays d\'origine', required=True)
-    insert_parser.add_argument('--rating', help='Classification', required=False)
-    insert_parser.add_argument('--release-date', help="Date de sortie, AAAA-MM-JJ", required=False)
+    insert_parser.add_argument('--rating', help='Classification', default='TP')
+    insert_parser.add_argument('--release-date', help="Date de sortie, AAAA-MM-JJ")
 
 args = parser.parse_args()
 
