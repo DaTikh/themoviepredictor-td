@@ -10,6 +10,7 @@ import mysql.connector
 import sys
 import argparse
 import csv
+import re
 
 def connectToDatabase():
     return mysql.connector.connect(user='predictor', password='predictor',
@@ -50,23 +51,31 @@ def findAll(table):
     disconnectDatabase(cnx)
     return results
 
-def insertQuery(args):
+def argsSanitizer(args):
     context, action = args.context, args.action
-    if args.context == "people":
-        k, v = [*vars(args)], [*vars(args).values()]
-        k.remove('context'), k.remove('action'), v.remove(context), v.remove(action)
-        blah = dict(zip(k, v))
-        keys = blah.items()
-        # k, v = (", ".join(k)), (", ".join(v))
-        # v = f"'{args.firstname}', '{args.lastname}'"
-    elif args.context == "movies":
-        if args.action == "insert":
-            k = "`title`, `duration`, `original_title`, `origin_country`"
-            v = f"'{args.title}', {args.duration}, '{args.original_title}', '{args.origin_country}'"
-        elif args.action == "import":
-            k = "`title`, `duration`, `original_title`, `rating`, `release_date`"
-            v = f"'{args.title}', {args.duration}, '{args.original_title}', '{args.rating}', '{args.release_date}'"
-    print(f"INSERT INTO `{context}` ({k}) VALUES ({v})")
+    k, v = [*vars(args)], [*vars(args).values()]
+    print(k)
+    print(v)
+           
+
+    # k, v = [*vars(args)], [*vars(args).values()]
+    # k.remove('context'), k.remove('action'), v.remove(context), v.remove(action)
+
+def insertQuery(args):
+    # argsSanitizer(args)
+    context, action = args.context, args.action
+    k, v = [*vars(args)], [*vars(args).values()]
+    k.remove('context'), k.remove('action'), v.remove(context), v.remove(action)
+    keys = list()
+    values = list()
+    for x in k:
+        keys.append(x)
+    for x in v:
+        if re.search("[a-zA-Z-]", x):
+            values.append("'"f"{x}""'")
+        elif re.search("[0-9]", x):
+            values.append(x) 
+    return (f"INSERT INTO {context} ({', '.join(keys)}) VALUES ({', '.join(values)})")
 
 def insert(args):
     cnx = connectToDatabase()
@@ -76,7 +85,7 @@ def insert(args):
     closeCursor(cursor)
     disconnectDatabase(cnx)
 
-def import_csv(args):
+def importCsv(args):
     with open(args.file, 'r', encoding='utf-8', newline='\n') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
@@ -120,6 +129,8 @@ elif b_args.context == "movies":
     insert_parser.add_argument('--duration', help='Durée du film', required=True)
     insert_parser.add_argument('--original-title', help='Titre original', required=True)
     insert_parser.add_argument('--origin-country', help='Pays d\'origine', required=True)
+    # insert_parser.add_argument('--rating', help='Classification', required=False)
+    # insert_parser.add_argument('--release-date', help="Date de sortie, AAAA-MM-JJ", required=False)
 
 args = parser.parse_args()
 
@@ -155,6 +166,6 @@ if args.context == "movies":
         for movie in movies:
             printMovie(movie)
     if args.action == "insert":
-        insert("movies", "insert", args)
+        insert(args)
     if args.action == "import":
-        import_csv(args)
+        importCsv(args)
