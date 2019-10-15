@@ -54,24 +54,22 @@ def findAll(table):
 def argsSanitizer(args):
     context, action = args.context, args.action
     k, v = [*vars(args)], [*vars(args).values()]
-    print(k)
-    print(v)
-           
-
-    # k, v = [*vars(args)], [*vars(args).values()]
-    # k.remove('context'), k.remove('action'), v.remove(context), v.remove(action)
+    k.remove('context'), k.remove('action'), v.remove(context), v.remove(action)
+    for i, x in enumerate(v):
+        if x == None:
+            v[i] = 'NULL'
+    return k, v, context
 
 def insertQuery(args):
-    # argsSanitizer(args)
-    context, action = args.context, args.action
-    k, v = [*vars(args)], [*vars(args).values()]
-    k.remove('context'), k.remove('action'), v.remove(context), v.remove(action)
+    k, v, context = argsSanitizer(args)
     keys = list()
     values = list()
     for x in k:
         keys.append(x)
     for x in v:
-        if re.search("[a-zA-Z-]", x):
+        if x == 'NULL':
+            values.append(x)
+        elif re.search("[a-zA-Z-]", x):
             values.append("'"f"{x}""'")
         elif re.search("[0-9]", x):
             values.append(x) 
@@ -129,10 +127,15 @@ elif b_args.context == "movies":
     insert_parser.add_argument('--duration', help='Durée du film', required=True)
     insert_parser.add_argument('--original-title', help='Titre original', required=True)
     insert_parser.add_argument('--origin-country', help='Pays d\'origine', required=True)
-    # insert_parser.add_argument('--rating', help='Classification', required=False)
-    # insert_parser.add_argument('--release-date', help="Date de sortie, AAAA-MM-JJ", required=False)
+    insert_parser.add_argument('--rating', help='Classification', required=False)
+    insert_parser.add_argument('--release-date', help="Date de sortie, AAAA-MM-JJ", required=False)
 
 args = parser.parse_args()
+
+if args.action == "insert":
+    insert(args)
+if args.action == "import":
+    importCsv(args)
 
 if args.context == "people":
     if args.action == "list":
@@ -151,9 +154,6 @@ if args.context == "people":
         people = find("people", peopleId)
         for person in people:
             printPerson(person)
-    if args.action == "insert":
-        insert(args) 
-
 
 if args.context == "movies":
     if args.action == "list":  
@@ -165,7 +165,3 @@ if args.context == "movies":
         movies = find("movies", movieId)
         for movie in movies:
             printMovie(movie)
-    if args.action == "insert":
-        insert(args)
-    if args.action == "import":
-        importCsv(args)
