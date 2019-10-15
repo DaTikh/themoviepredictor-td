@@ -55,9 +55,10 @@ def insertQuery(args):
     if args.context == "people":
         k, v = [*vars(args)], [*vars(args).values()]
         k.remove('context'), k.remove('action'), v.remove(context), v.remove(action)
-        k, v = (", ".join(k)), (", ".join(v))
+        blah = dict(zip(k, v))
+        keys = blah.items()
+        # k, v = (", ".join(k)), (", ".join(v))
         # v = f"'{args.firstname}', '{args.lastname}'"
-        print(v)
     elif args.context == "movies":
         if args.action == "insert":
             k = "`title`, `duration`, `original_title`, `origin_country`"
@@ -65,7 +66,7 @@ def insertQuery(args):
         elif args.action == "import":
             k = "`title`, `duration`, `original_title`, `rating`, `release_date`"
             v = f"'{args.title}', {args.duration}, '{args.original_title}', '{args.rating}', '{args.release_date}'"
-    return (f"INSERT INTO `{context}` ({k}) VALUES ({v})")
+    print(f"INSERT INTO `{context}` ({k}) VALUES ({v})")
 
 def insert(args):
     cnx = connectToDatabase()
