@@ -13,53 +13,53 @@ import argparse
 import csv
 import re
 
-def connectToDatabase():
+def connect_to_database():
     return mysql.connector.connect(user='predictor', password='predictor',
                               host='127.0.0.1',
                               database='predictor')
 
-def disconnectDatabase(cnx):
+def disconnect_database(cnx):
     cnx.close()
 
-def createCursor(cnx):
+def create_cursor(cnx):
     return cnx.cursor(dictionary=True)
 
-def closeCursor(cursor):    
+def close_cursor(cursor):
     cursor.close()
 
-def findQuery(table, id):
+def find_query(table, id):
     return ("SELECT * FROM {} WHERE id = {}".format(table, id))
 
-def findAllQuery(table):
+def find_all_query(table):
     return ("SELECT * FROM {}".format(table))
 
 def find(table, id):
-    cnx = connectToDatabase()
-    cursor = createCursor(cnx)
-    query = findQuery(table, id)
+    cnx = connect_to_database()
+    cursor = create_cursor(cnx)
+    query = find_query(table, id)
     cursor.execute(query)
     results = cursor.fetchall()
-    closeCursor(cursor)
-    disconnectDatabase(cnx)
+    close_cursor(cursor)
+    disconnect_database(cnx)
     return results
 
-def findAll(table):
-    cnx = connectToDatabase()
-    cursor = createCursor(cnx)
-    cursor.execute(findAllQuery(table))
+def find_all(table):
+    cnx = connect_to_database()
+    cursor = create_cursor(cnx)
+    cursor.execute(find_all_query(table))
     results = cursor.fetchall()
-    closeCursor(cursor)
-    disconnectDatabase(cnx)
+    close_cursor(cursor)
+    disconnect_database(cnx)
     return results
 
-def argsSanitizer(args):
+def args_sanitizer(args):
     context, action = args.context, args.action
     k, v = [*vars(args)], [*vars(args).values()]
     k.remove('context'), k.remove('action'), v.remove(context), v.remove(action)
     return k, v, context, action
 
-def insertQuery(args):
-    k, v, context, action = argsSanitizer(args)
+def insert_query(args):
+    k, v, context, action = args_sanitizer(args)
     keys = list()
     values = list()
     for x in k:
@@ -70,18 +70,18 @@ def insertQuery(args):
         elif re.search("[a-zA-Z-]", x):
             values.append("'"f"{x}""'")
         elif re.search("[0-9]", x):
-            values.append(x) 
+            values.append(x)
     return (f"INSERT INTO {context} ({', '.join(keys)}) VALUES ({', '.join(values)})")
 
 def insert(args):
-    cnx = connectToDatabase()
-    cursor = createCursor(cnx)
-    cursor.execute(insertQuery(args))
+    cnx = connect_to_database()
+    cursor = create_cursor(cnx)
+    cursor.execute(insert_query(args))
     cnx.commit()
-    closeCursor(cursor)
-    disconnectDatabase(cnx)
+    close_cursor(cursor)
+    disconnect_database(cnx)
 
-def importCsv(args):
+def import_csv(args):
     with open(args.file, 'r', encoding='utf-8', newline='\n') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
@@ -90,19 +90,19 @@ def importCsv(args):
             row = (argparse.Namespace(**row))
             insert(row)
 
-def printPerson(person):
+def print_person(person):
     print("#{}: {} {}".format(person['id'], person['firstname'], person['lastname']))
 
-def printMovie(movie):
+def print_movie(movie):
     print("#{}: {} released on {}".format(movie['id'], movie['title'], movie['release_date']))
 
 
-buffer = argparse.ArgumentParser(description="Context parser", add_help=False)
-buffer.add_argument('context', choices=['people', 'movies'], help='Le contexte dans lequel nous allons travailler')
+context_parser = argparse.ArgumentParser(description="Context parser", add_help=False)
+context_parser.add_argument('context', choices=['people', 'movies'], help='Le contexte dans lequel nous allons travailler', nargs="?")
 
-b_args, u_args = buffer.parse_known_args()
+b_args, u_args = context_parser.parse_known_args()
 
-parser = argparse.ArgumentParser(parents=[buffer], description='Process MoviePredictor data')
+parser = argparse.ArgumentParser(parents=[context_parser], description='Process MoviePredictor data')
 
 action_subparser = parser.add_subparsers(title='action', dest='action')
 
@@ -133,11 +133,11 @@ args = parser.parse_args()
 if args.action == "insert":
     insert(args)
 if args.action == "import":
-    importCsv(args)
+    import_csv(args)
 
 if args.context == "people":
     if args.action == "list":
-        people = findAll("people")
+        people = find_all("people")
         if args.export:
             with open(args.export, 'w', encoding='utf-8', newline='\n') as csvfile:
                 writer = csv.writer(csvfile)
@@ -146,20 +146,20 @@ if args.context == "people":
                     writer.writerow(person.values())
         else:
             for person in people:
-                printPerson(person)
+                print_person(person)
     if args.action == "find":
         peopleId = args.id
         people = find("people", peopleId)
         for person in people:
-            printPerson(person)
+            print_person(person)
 
 if args.context == "movies":
-    if args.action == "list":  
-        movies = findAll("movies")
+    if args.action == "list":
+        movies = find_all("movies")
         for movie in movies:
-            printMovie(movie)
-    if args.action == "find":  
+            print_movie(movie)
+    if args.action == "find":
         movieId = args.id
         movies = find("movies", movieId)
         for movie in movies:
-            printMovie(movie)
+            print_movie(movie)
