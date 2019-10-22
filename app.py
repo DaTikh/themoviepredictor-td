@@ -100,27 +100,27 @@ def print_movie(movie):
 context_parser = argparse.ArgumentParser(description="Context parser", add_help=False)
 context_parser.add_argument('context', choices=['people', 'movies'], help='Le contexte dans lequel nous allons travailler', nargs="?")
 
-b_args, u_args = context_parser.parse_known_args()
+context_args, unknown_args = context_parser.parse_known_args()
 
 parser = argparse.ArgumentParser(parents=[context_parser], description='Process MoviePredictor data')
 
 action_subparser = parser.add_subparsers(title='action', dest='action')
 
 list_parser = action_subparser.add_parser('list', help='Liste les entités du contexte')
-list_parser.add_argument('--export' , help='Chemin du fichier exporté')
+list_parser.add_argument('--export', help='Chemin du fichier exporté')
 
 find_parser = action_subparser.add_parser('find', help='Trouve une entité selon un paramètre')
-find_parser.add_argument('id' , help='Identifant à rechercher')
+find_parser.add_argument('id', help='Identifant à rechercher')
 
 import_parser = action_subparser.add_parser('import', help='Importe un fichier CSV dans la base de données')
 import_parser.add_argument('--file', help='Chemin du fichier à importer', required=True)
 
 insert_parser = action_subparser.add_parser('insert', help='Insère une entrée dans la base de données')
 
-if b_args.context == "people":
+if context_args.context == "people":
     insert_parser.add_argument('--firstname', help='Prénom')
     insert_parser.add_argument('--lastname', help='Nom de famille')
-elif b_args.context == "movies":
+elif context_args.context == "movies":
     insert_parser.add_argument('--title', help='Titre du film', required=True)
     insert_parser.add_argument('--duration', help='Durée du film', required=True)
     insert_parser.add_argument('--original-title', help='Titre original', required=True)
@@ -153,7 +153,7 @@ if args.context == "people":
         for person in people:
             print_person(person)
 
-if args.context == "movies":
+elif args.context == "movies":
     if args.action == "list":
         movies = find_all("movies")
         for movie in movies:
