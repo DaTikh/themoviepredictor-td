@@ -13,6 +13,7 @@ import argparse
 import csv
 import re
 import imdb_scrappper
+from movie import Movie
 
 def connect_to_database():
     return mysql.connector.connect(user='predictor', password='predictor',
