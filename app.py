@@ -12,6 +12,7 @@ import sys
 import argparse
 import csv
 import re
+import imdb_scrappper
 
 def connect_to_database():
     return mysql.connector.connect(user='predictor', password='predictor',
@@ -73,6 +74,14 @@ def insert_query(args):
             values.append(x)
     return (f"INSERT INTO {context} ({', '.join(keys)}) VALUES ({', '.join(values)})")
 
+def insert_from_IMDB(args, title, original_title, rating, duration, release_date):
+    cnx = connect_to_database()
+    cursor = create_cursor(cnx)
+    cursor.execute(f"INSERT INTO `{args.context}` (`title`, `original_title`, `rating`, `duration`, `release_date`) VALUES ('{title}', '{original_title}', '{rating}', {duration}, {release_date})")
+    cnx.commit()
+    close_cursor(cursor)
+    disconnect_database(cnx)
+
 def insert(args):
     cnx = connect_to_database()
     cursor = create_cursor(cnx)
@@ -117,6 +126,9 @@ import_parser.add_argument('--file', help='Chemin du fichier à importer', requi
 
 insert_parser = action_subparser.add_parser('insert', help='Insère une entrée dans la base de données')
 
+scrap_parser = action_subparser.add_parser('scrap', help='Insère un film depuis IMDB')
+scrap_parser.add_argument('--url', help='URL du film sur IMDB', required=True)
+
 if context_args.context == "people":
     insert_parser.add_argument('--firstname', help='Prénom')
     insert_parser.add_argument('--lastname', help='Nom de famille')
@@ -134,6 +146,8 @@ if args.action == "insert":
     insert(args)
 if args.action == "import":
     import_csv(args)
+if args.action == "scrap":
+    insert_from_IMDB(args, *imdb_scrappper.perform(args.url))
 
 if args.context == "people":
     if args.action == "list":

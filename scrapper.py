@@ -14,3 +14,6 @@ h2 = soup.find(id="Fiche_technique").parent
 fiche_ul = h2.find_next_sibling("ul")
 
 infos = fiche_ul.find_all("li")
+
+for info in infos:
+    print(info.text)
