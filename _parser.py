@@ -21,6 +21,7 @@ The context and action choices are:
         args = parser.parse_args(sys.argv[1:3])
         self.action = args.action
         self.context = args.context
+        self.db = database.Db()
         getattr(self, '_' + args.action)()
         
 
@@ -38,7 +39,7 @@ The context and action choices are:
   
 
     def _list(self):
-        db = database.Db()
+        # db = database.Db()
         parser = argparse.ArgumentParser(
             description='''List all the items of the given context:
     -  directly in the console
@@ -48,12 +49,13 @@ The context and action choices are:
         args = parser.parse_args(sys.argv[3:])
         if args.export:
             if args.export.endswith('.csv'):
-                db._export_csv(table=self.context, filepath=args.export)
+                self.db._export_csv(table=self.context, filepath=args.export)
             elif args.export.endswith('.json'):
-                db._export_json(table=self.context, filepath=args.export)
+                self.db._export_json(table=self.context, filepath=args.export)
         else:
-            db._list(table=self.context)
-
+            results = self.db._list(table=self.context)
+            for result in results:
+                print(result)
 
     def _insert(self):
         parser = argparse.ArgumentParser(
@@ -67,13 +69,13 @@ The context and action choices are:
             parser.add_argument('--release-date', help="Date de sortie, AAAA-MM-JJ")
             args = parser.parse_args()
             movie = Movie(title=args.title, original_title=args.original_title, duration=args.duration, rating=args.rating, release_date=args.releasedate)
-            movie_id = insert_movies(movie)
+            # movie_id = insert_movies(movie)
             print(f"Nouveau film inséré avec l'id {movie_id}")
         else: 
             parser.add_argument('--firstname', help='Prénom', required=True)
             parser.add_argument('--lastname', help='Nom de famille', required=True)
             person = Person(firstname=args.firstname, lastname=args.lastname)
-            person_id = insert_person(person)
+            # person_id = insert_person(person)
         args = parser.parse_args(sys.argv[3:])
         print(args)
 
