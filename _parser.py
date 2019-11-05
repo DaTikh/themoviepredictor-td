@@ -4,6 +4,7 @@ import argparse
 from person import Person
 from movie import Movie
 import database
+import factory
 
 class Parser(object):
     
@@ -48,10 +49,13 @@ The context and action choices are:
         parser.add_argument('--export', help='File path for the export')
         args = parser.parse_args(sys.argv[3:])
         if args.export:
+            new_file = factory.Factory()
             if args.export.endswith('.csv'):
-                self.db._export_csv(table=self.context, filepath=args.export)
+                results = self.db._list(table=self.context)
+                new_file._export_csv(data=results, filepath=args.export)
             elif args.export.endswith('.json'):
-                self.db._export_json(table=self.context, filepath=args.export)
+                results = self.db._list(table=self.context)
+                new_file._export_json(data=results, filepath=args.export)
         else:
             results = self.db._list(table=self.context)
             for result in results:

@@ -44,21 +44,9 @@ class Db():
         self._dcnx()
         return results
 
-    def _export_csv(self, table, filepath):
-        results = self._list(table) 
-        with open(filepath, 'w', encoding='utf-8', newline='\n') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow(results[0].keys())
-            for result in results:
-                writer.writerow(result.values())
-
-    def _export_json(self, table, filepath):
-        results = self._list(table)
-        with open(filepath, "w", encoding='utf-8') as write_file:
-            json.dump(results, write_file, ensure_ascii=False, default=str)
-
     def find_all_query(self, table):
         return f"SELECT * FROM {table}"
+
 
 if __name__ == '__main__':
     Db()
