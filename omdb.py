@@ -16,3 +16,5 @@ class Omdb:
     def get_movie(id):
         r = requests.get(f'http://www.omdbapi.com/?i={id}&apikey={OMDB_API_KEY}')
         return r.json()
+
+print(OMDB_API_KEY)

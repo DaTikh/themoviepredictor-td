@@ -125,9 +125,8 @@ find_parser.add_argument('id', help='Identifant à rechercher')
 
 import_parser = action_subparser.add_parser('import', help='Importe un fichier CSV dans la base de données')
 import_parser.add_argument('--file', help='Chemin du fichier à importer')
-import_parser.add_argument('--api', help="Choix de l'API à contacter")
-
-
+api_parser = import_parser.add_argument('--api', help="Choix de l'API à contacter")
+api_parser.add_argument('id', help='Identifiant à rechercher')
 
 insert_parser = action_subparser.add_parser('insert', help='Insère une entrée dans la base de données')
 
