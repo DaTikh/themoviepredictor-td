@@ -13,7 +13,9 @@ import argparse
 import csv
 import re
 import imdb_scrappper
+
 from movie import Movie
+from omdb import Omdb
 
 def connect_to_database():
     return mysql.connector.connect(user='predictor', password='predictor',
@@ -106,7 +108,6 @@ def print_person(person):
 def print_movie(movie):
     print("#{}: {} released on {}".format(movie['id'], movie['title'], movie['release_date']))
 
-
 context_parser = argparse.ArgumentParser(description="Context parser", add_help=False)
 context_parser.add_argument('context', choices=['people', 'movies'], help='Le contexte dans lequel nous allons travailler', nargs="?")
 
@@ -123,7 +124,10 @@ find_parser = action_subparser.add_parser('find', help='Trouve une entité selon
 find_parser.add_argument('id', help='Identifant à rechercher')
 
 import_parser = action_subparser.add_parser('import', help='Importe un fichier CSV dans la base de données')
-import_parser.add_argument('--file', help='Chemin du fichier à importer', required=True)
+import_parser.add_argument('--file', help='Chemin du fichier à importer')
+import_parser.add_argument('--api', help="Choix de l'API à contacter")
+
+
 
 insert_parser = action_subparser.add_parser('insert', help='Insère une entrée dans la base de données')
 
@@ -178,3 +182,5 @@ elif args.context == "movies":
         movies = find("movies", movieId)
         for movie in movies:
             print_movie(movie)
+
+print(Omdb.get_movie("tt3896198"))
