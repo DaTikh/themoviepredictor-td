@@ -13,12 +13,13 @@ import argparse
 import csv
 import re
 import imdb_scrappper
-import truc
+
+import _parser as ps
 
 from movie import Movie
 from omdb import Omdb
 
-truc = truc.Parser()
+parser = ps.Parser()
 
 def connect_to_database():
     return mysql.connector.connect(user='predictor', password='predictor',
@@ -149,40 +150,40 @@ def print_movie(movie):
 
 # args = parser.parse_args()
 
-if args.action == "insert":
-    insert(args)
-if args.action == "import":
-    import_csv(args)
-if args.action == "scrap":
-    insert_from_IMDB(args, *imdb_scrappper.perform(args.url))
+# if args.action == "insert":
+#     insert(args)
+# if args.action == "import":
+#     import_csv(args)
+# if args.action == "scrap":
+#     insert_from_IMDB(args, *imdb_scrappper.perform(args.url))
 
-if args.context == "people":
-    if args.action == "list":
-        people = find_all("people")
-        if args.export:
-            with open(args.export, 'w', encoding='utf-8', newline='\n') as csvfile:
-                writer = csv.writer(csvfile)
-                writer.writerow(people[0].keys())
-                for person in people:
-                    writer.writerow(person.values())
-        else:
-            for person in people:
-                print_person(person)
-    if args.action == "find":
-        peopleId = args.id
-        people = find("people", peopleId)
-        for person in people:
-            print_person(person)
+# if args.context == "people":
+#     if args.action == "list":
+#         people = find_all("people")
+#         if args.export:
+#             with open(args.export, 'w', encoding='utf-8', newline='\n') as csvfile:
+#                 writer = csv.writer(csvfile)
+#                 writer.writerow(people[0].keys())
+#                 for person in people:
+#                     writer.writerow(person.values())
+#         else:
+#             for person in people:
+#                 print_person(person)
+#     if args.action == "find":
+#         peopleId = args.id
+#         people = find("people", peopleId)
+#         for person in people:
+#             print_person(person)
 
-elif args.context == "movies":
-    if args.action == "list":
-        movies = find_all("movies")
-        for movie in movies:
-            print_movie(movie)
-    if args.action == "find":
-        movieId = args.id
-        movies = find("movies", movieId)
-        for movie in movies:
-            print_movie(movie)
+# elif args.context == "movies":
+#     if args.action == "list":
+#         movies = find_all("movies")
+#         for movie in movies:
+#             print_movie(movie)
+#     if args.action == "find":
+#         movieId = args.id
+#         movies = find("movies", movieId)
+#         for movie in movies:
+#             print_movie(movie)
 
-print(Omdb.get_movie("tt3896198"))
+# print(Omdb.get_movie("tt3896198"))
