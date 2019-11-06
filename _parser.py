@@ -31,16 +31,18 @@ The context and action choices are:
             description="Find an item by its id")
         parser.add_argument('id', help='Id to find')
         args = parser.parse_args(sys.argv[3:])
-        if self.context == "movies":
-            print(f'Searching for the movie with the id: {args.id}')
-            db.find_movie(args)
-        else:
-            print(f'Searching for the person with the id: {args.id}')
-            db.find_person(args)
+        results = self.db._find(table=self.context, id=args.id)
+        print(results[0])
+
+        # if self.context == "movies":
+        #     print(f'Searching for the movie with the id: {args.id}')
+        #     db.find_movie(args)
+        # else:
+        #     print(f'Searching for the person with the id: {args.id}')
+        #     db.find_person(args)
   
 
     def _list(self):
-        # db = database.Db()
         parser = argparse.ArgumentParser(
             description='''List all the items of the given context:
     -  directly in the console
@@ -68,12 +70,12 @@ The context and action choices are:
             parser.add_argument('--title', help='Titre du film', required=True)
             parser.add_argument('--duration', help='Durée du film', required=True)
             parser.add_argument('--original-title', help='Titre original', required=True)
-            parser.add_argument('--origin-country', help='Pays d\'origine', required=True)
+            parser.add_argument('--origin-country', help='Pays d\'origine')
             parser.add_argument('--rating', help='Classification', default='TP')
             parser.add_argument('--release-date', help="Date de sortie, AAAA-MM-JJ")
-            args = parser.parse_args()
-            movie = Movie(title=args.title, original_title=args.original_title, duration=args.duration, rating=args.rating, release_date=args.releasedate)
-            # movie_id = insert_movies(movie)
+            args = parser.parse_args(sys.argv[3:])
+            movie = Movie(title=args.title, original_title=args.original_title, duration=args.duration, rating=args.rating, release_date=args.release_date)
+            movie_id = self.db._insert_movie(table="movies", movie=movie)
             print(f"Nouveau film inséré avec l'id {movie_id}")
         else: 
             parser.add_argument('--firstname', help='Prénom', required=True)

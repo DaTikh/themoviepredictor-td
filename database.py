@@ -38,11 +38,25 @@ class Db():
         self.cursor.close()
         self.cnx.close()
 
+    def _find(self, table, id):
+        self.cursor.execute(self.find_query(table, id))
+        results = self.cursor.fetchall()
+        self._dcnx()
+        return results
+
     def _list(self, table):
         self.cursor.execute(self.find_all_query(table))
         results = self.cursor.fetchall()
         self._dcnx()
         return results
+
+    def _insert_movie(self, table, movie):
+        print(movie.release_date)
+        self.cursor.execute(f"INSERT INTO `{table}` (`title`, `original_title`, `rating`, `duration`, `release_date`) VALUES ('{movie.title}', '{movie.original_title}', '{movie.rating}', {movie.duration}, {movie.release_date})")
+        self.cnx.commit()
+    
+    def find_query(self, table, id):
+        return f"SELECT * FROM {table} WHERE `id` = {id}"
 
     def find_all_query(self, table):
         return f"SELECT * FROM {table}"
