@@ -21,45 +21,6 @@ from omdb import Omdb
 
 parser = ps.Parser()
 
-def connect_to_database():
-    return mysql.connector.connect(user='predictor', password='predictor',
-                              host='127.0.0.1',
-                              database='predictor')
-
-def disconnect_database(cnx):
-    cnx.close()
-
-def create_cursor(cnx):
-    return cnx.cursor(dictionary=True)
-
-def close_cursor(cursor):
-    cursor.close()
-
-def find_query(table, id):
-    return ("SELECT * FROM {} WHERE id = {}".format(table, id))
-
-def find_all_query(table):
-    return ("SELECT * FROM {}".format(table))
-
-def find(table, id):
-    cnx = connect_to_database()
-    cursor = create_cursor(cnx)
-    query = find_query(table, id)
-    cursor.execute(query)
-    results = cursor.fetchall()
-    close_cursor(cursor)
-    disconnect_database(cnx)
-    return results
-
-def find_all(table):
-    cnx = connect_to_database()
-    cursor = create_cursor(cnx)
-    cursor.execute(find_all_query(table))
-    results = cursor.fetchall()
-    close_cursor(cursor)
-    disconnect_database(cnx)
-    return results
-
 def args_sanitizer(args):
     context, action = args.context, args.action
     k, v = [*vars(args)], [*vars(args).values()]

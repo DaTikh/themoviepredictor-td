@@ -5,6 +5,7 @@ from person import Person
 from movie import Movie
 import database
 import factory
+from omdb import Omdb
 
 class Parser(object):
     
@@ -74,16 +75,17 @@ The context and action choices are:
             parser.add_argument('--rating', help='Classification', default='TP')
             parser.add_argument('--release-date', help="Date de sortie, AAAA-MM-JJ")
             args = parser.parse_args(sys.argv[3:])
+            print(args)
             movie = Movie(title=args.title, original_title=args.original_title, duration=args.duration, rating=args.rating, release_date=args.release_date)
-            movie_id = self.db._insert_movie(table="movies", movie=movie)
+            movie_id = self.db._insert_movie(table="movies", object=movie)
             print(f"Nouveau film inséré avec l'id {movie_id}")
         else: 
             parser.add_argument('--firstname', help='Prénom', required=True)
             parser.add_argument('--lastname', help='Nom de famille', required=True)
+            args = parser.parse_args(sys.argv[3:])
             person = Person(firstname=args.firstname, lastname=args.lastname)
-            # person_id = insert_person(person)
-        args = parser.parse_args(sys.argv[3:])
-        print(args)
+            person_id = self.db._insert_person(table="people", person=person)
+            print(f"Nouvelle personne insérée avec l'id {person_id}")
 
 
     def _import(self):
@@ -102,9 +104,15 @@ The context and action choices are:
         parser.add_argument('--imdbId', help="Id on IMDB")
         parser.add_argument('--file', help="File path")
         args = parser.parse_args(sys.argv[3:])
-        # if args.api in ['omdb', 'themoviedb'] and args.imdbId:
-            
-        # elif args.file:
+        if args.api in ['omdb', 'themoviedb'] and args.imdbId:
+            if args.api == 'omdb':
+                print(args)
+                movie = Omdb.get_movie(args.imdbId)
+            else:
+                movie = themoviedb.get_movie(args.imdbId)
+            self.db._insert(table="movies", object=movie)
+        elif args.file:
+            print(truc)
         
 if __name__ == '__main__':
     Parser()

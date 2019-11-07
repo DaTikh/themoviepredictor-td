@@ -50,17 +50,28 @@ class Db():
         self._dcnx()
         return results
 
-    def _insert_movie(self, table, movie):
-        print(movie.release_date)
-        self.cursor.execute(f"INSERT INTO `{table}` (`title`, `original_title`, `rating`, `duration`, `release_date`) VALUES ('{movie.title}', '{movie.original_title}', '{movie.rating}', {movie.duration}, {movie.release_date})")
+    def _insert(self, table, object):
+        print(object.release_date)
+        self.cursor.execute(self.query_insert(table, object))
         self.cnx.commit()
+        return self.cursor.lastrowid
+
+    def _insert_person(self, table, person):
+        self.cursor.execute(f"INSERT INTO `{table}` (`firstname`, `lastname`) VALUES ('{person.firstname}', '{person.lastname}')")
+        self.cnx.commit()
+        return self.cursor.lastrowid
     
     def find_query(self, table, id):
         return f"SELECT * FROM {table} WHERE `id` = {id}"
 
     def find_all_query(self, table):
         return f"SELECT * FROM {table}"
-
+    
+    def query_insert(self, table, object):
+        if table == 'movies':
+            return f"INSERT INTO `{table}` (`title`, `original_title`, `rating`, `duration`, `release_date`) VALUES ('{object.title}', '{object.original_title}', '{object.rating}', {object.duration}, '{object.release_date}')"
+        else:
+            return f"INSERT INTO `{table}` (`firstname`, `lastname`) VALUES ('{object.firstname}', '{object.lastname}')"
 
 if __name__ == '__main__':
     Db()
