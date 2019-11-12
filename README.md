@@ -12,19 +12,19 @@ Pour cloner le repo sur ta machine :
   $ git clone https://github.com/DaTikh/themoviepredictor-td.git
 ```
 
-    - Ensuite il te faudra lancer les containers depuis le dossier avec Docker :
+   - Ensuite il te faudra lancer les containers depuis le dossier avec Docker :
 
 ```
   $ docker-compose up -d
 ```
 
-    - Librairies utilisées :
+   - Librairies utilisées :
 
 ```
   $ pip install argparse && pip install requests && pip install bs4
 ```
 
-    - Puis rendez-vous sur ton web browser préféré à l'adresse :
+   - Puis rendez-vous sur ton web browser préféré à l'adresse :
 
  ```
    @ http://localhost:8080/
@@ -51,7 +51,7 @@ Dans ton bash tu peux tester le script avec par exemple les commandes suivantes.
 
 ```
   $ python app.py people insert --firstname "John" --lastname "Doe"
-  $ $ python app.py movies insert --title "Star Wars, épisode VIII : Les Derniers Jedi" --duration 152 --original-title "Star Wars: Episode VIII – The Last Jedi" --origin-country US
+  $ python app.py movies insert --title "Star Wars, épisode VIII : Les Derniers Jedi" --duration 152 --original-title "Star Wars: Episode VIII – The Last Jedi" --origin-country US
   $ python app.py movies import --file new_movies.csv
   $ python app.py people list
   $ python app.py movies list
