@@ -29,7 +29,7 @@ INSERT INTO `movies`
     (`title`, `original_title`, `imdb_id`, `duration`, `rating`, `release_date`)
 VALUES
     ('Joker', 'Joker', 'test', 122, '-12', '2019-10-09'),
-	('Joker2', 'blabla', 'test2', 146, '-12', '2018-05-04')
+    ('Joker2', 'blabla', 'test2', 146, '-12', '2018-05-04')
 ;
 
 INSERT INTO `people`
