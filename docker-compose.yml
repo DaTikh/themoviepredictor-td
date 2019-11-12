@@ -1,19 +1,25 @@
 version: '3.7'
 
 services:
+  app:
+    build: .
+    env_file: ./auth.env
+    depends_on: 
+      - database
+    volumes: 
+      - .:/usr/src/themoviepredictor
+    networks: 
+      - database_net
   database:
     image: mysql:latest
-    environment:
-      - MYSQL_RANDOM_ROOT_PASSWORD=yes
-      - MYSQL_USER=predictor
-      - MYSQL_PASSWORD=predictor
-      - MYSQL_DATABASE=predictor
+    env_file: ./auth.env
     networks:
       - database_net
     ports:
       - 3306:3306
     volumes:
       - database_data:/var/lib/mysql
+      - ./init_db:/docker-entrypoint-initdb.d
     command: --default_authentication_plugin=mysql_native_password
   adminer:
     image: dehy/adminer

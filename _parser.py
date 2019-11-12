@@ -1,11 +1,16 @@
+# -*- coding: utf-8 -*-
+
 import sys
 import argparse
 
+import database
+
 from person import Person
 from movie import Movie
-import database
-import factory
+from factory import Factory
 from omdb import Omdb
+from tmdb import Tmdb
+
 
 class Parser(object):
     
@@ -25,66 +30,64 @@ The context and action choices are:
         self.context = args.context
         self.db = database.Db()
         getattr(self, '_' + args.action)()
-        
+
+
+    @classmethod
+    def second_parser(self, parser):
+        return parser.parse_args(sys.argv[3:])
+
 
     def _find(self):
         parser = argparse.ArgumentParser(
             description="Find an item by its id")
         parser.add_argument('id', help='Id to find')
-        args = parser.parse_args(sys.argv[3:])
+        args = self.second_parser(parser)
         results = self.db._find(table=self.context, id=args.id)
         print(results[0])
 
-        # if self.context == "movies":
-        #     print(f'Searching for the movie with the id: {args.id}')
-        #     db.find_movie(args)
-        # else:
-        #     print(f'Searching for the person with the id: {args.id}')
-        #     db.find_person(args)
-  
 
     def _list(self):
         parser = argparse.ArgumentParser(
             description='''List all the items of the given context:
-    -  directly in the console
-    -  export in a CSV/JSON file
+    -  directly in the console if no arguments
+    -  export in a CSV/JSON file (with --export <filepath>)
     ''')
         parser.add_argument('--export', help='File path for the export')
-        args = parser.parse_args(sys.argv[3:])
+        args = self.second_parser(parser)
         if args.export:
-            new_file = factory.Factory()
             if args.export.endswith('.csv'):
                 results = self.db._list(table=self.context)
-                new_file._export_csv(data=results, filepath=args.export)
+                Factory._export_csv(data=results, filepath=args.export)
             elif args.export.endswith('.json'):
                 results = self.db._list(table=self.context)
-                new_file._export_json(data=results, filepath=args.export)
+                Factory._export_json(data=results, filepath=args.export)
         else:
             results = self.db._list(table=self.context)
             for result in results:
                 print(result)
+
 
     def _insert(self):
         parser = argparse.ArgumentParser(
             description="Insert an item of the given context in the databse")
         if self.context == "movies":
             parser.add_argument('--title', help='Titre du film', required=True)
+            parser.add_argument('--imdb-id', help='Id sur IMDB', required=True)
             parser.add_argument('--duration', help='Durée du film', required=True)
-            parser.add_argument('--original-title', help='Titre original', required=True)
+            parser.add_argument('--original-title', help='Titre original')
             parser.add_argument('--origin-country', help='Pays d\'origine')
             parser.add_argument('--rating', help='Classification', default='TP')
             parser.add_argument('--release-date', help="Date de sortie, AAAA-MM-JJ")
-            args = parser.parse_args(sys.argv[3:])
-            print(args)
-            movie = Movie(title=args.title, original_title=args.original_title, duration=args.duration, rating=args.rating, release_date=args.release_date)
-            movie_id = self.db._insert_movie(table="movies", object=movie)
+            args = self.second_parser(parser)
+            movie = Movie(title=args.title, imdb_id=args.imdb_id, original_title=args.original_title, duration=args.duration, rating=args.rating, release_date=args.release_date)
+            movie_id = self.db._insert(table="movies", object=movie)
             print(f"Nouveau film inséré avec l'id {movie_id}")
         else: 
             parser.add_argument('--firstname', help='Prénom', required=True)
             parser.add_argument('--lastname', help='Nom de famille', required=True)
-            args = parser.parse_args(sys.argv[3:])
+            args = self.second_parser(parser)
             person = Person(firstname=args.firstname, lastname=args.lastname)
-            person_id = self.db._insert_person(table="people", person=person)
+            person_id = self.db._insert(table="people", object=person)
             print(f"Nouvelle personne insérée avec l'id {person_id}")
 
 
@@ -100,19 +103,23 @@ The context and action choices are:
         #     parser.add_argument('api_name', help='API name')
         #     parser.add_argument('--imdbId', help="Id on IMDB")
 
-        parser.add_argument('--api', help="Name of the API (omdb/themoviedb)")
+        parser.add_argument('--api', help="Name of the API (omdb/tmdb)")
         parser.add_argument('--imdbId', help="Id on IMDB")
         parser.add_argument('--file', help="File path")
-        args = parser.parse_args(sys.argv[3:])
-        if args.api in ['omdb', 'themoviedb'] and args.imdbId:
+        args = self.second_parser(parser)
+        if args.api in ['omdb', 'tmdb'] and args.imdbId:
             if args.api == 'omdb':
-                print(args)
-                movie = Omdb.get_movie(args.imdbId)
+                result = getattr(Omdb, 'get_' + self.context)(args.imdbId)
             else:
-                movie = themoviedb.get_movie(args.imdbId)
-            self.db._insert(table="movies", object=movie)
+                result = getattr(Tmdb, 'get_' + self.context)(args.imdbId)
+            last_id = self.db._insert(table=self.context, object=result)
+            print(f"Last insertion id: #{last_id}.")
+            print(f"Inserted object: {vars(result)}")
         elif args.file:
-            print(truc)
-        
+            Factory._import_csv(self.context, args.file)
+        else:
+            print("Please specify an API (omdb/tmdb) or a filepath.")
+
+
 if __name__ == '__main__':
     Parser()
