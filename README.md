@@ -12,49 +12,28 @@ Pour cloner le repo sur ta machine :
   $ git clone https://github.com/DaTikh/themoviepredictor-td.git
 ```
 
-   - Ensuite il te faudra lancer les containers depuis le dossier avec Docker :
+Ensuite il te faudra renommer le fichier `auth_sample.env` en `auth.env` et y renseigner tes clés d'API, ainsi que les valeurs des variables d'environnement de ton choix.
+
+Enfin, tu pourras lancer le script à l'aide de la commande suivante :
 
 ```
-  $ docker-compose up -d
+  $ docker-compose up
 ```
 
-   - Librairies utilisées :
-
-```
-  $ pip install argparse && pip install requests && pip install bs4
-```
-
-   - Puis rendez-vous sur ton web browser préféré à l'adresse :
-
- ```
-   @ http://localhost:8080/
- ```
-
-Une fois sur l'interface d'Adminer, connecte toi sur la database avec les identifiants suivants :
-
-```
-Server : themoviepredictor-td_database_1
-User: predictor
-Password : predictor
-Database : predictor
-```
-
-Une fois connecté clique sur **Import**, puis sélectionne le fichier *TheMoviePredictor_create.sql*.
-Félicitations, tu viens de créer et peupler la database !
-
-*NOTA : $ = bash || @ = web browser*
-
+Docker lancera les containers, attendra que la database soit online puis cherchera un film via l'API d'Omdb, l'enregistrera en mémoire et affichera la dernière entrée avant de se fermer.
 
 ## Les commandes qui vont bien pour s'amuser :
 
-Dans ton bash tu peux tester le script avec par exemple les commandes suivantes...
+En utilisant le fichier `docker-compose.override.yml` (une fois renommé) tu peux tester le script dans ton bash avec par exemple les commandes suivantes...
 
 ```
-  $ python app.py people insert --firstname "John" --lastname "Doe"
-  $ python app.py movies insert --title "Star Wars, épisode VIII : Les Derniers Jedi" --duration 152 --original-title "Star Wars: Episode VIII – The Last Jedi" --origin-country US
-  $ python app.py movies import --file new_movies.csv
-  $ python app.py people list
-  $ python app.py movies list
+  $ docker-compose exec app bash
+  # python app.py movies import --api omdb --imdbId tt0338013
+  # python app.py people import --api tmdb --imdbId "José Garcia"  
+  # python app.py movies import --file new_movies.csv
+  # python app.py people list --export people_list.json
+  # python app.py movies list --export movie_list.csv
+  # python app.py people list
 ```
 
 Normalement ça doit faire des trucs super cools, tu m'en diras des nouvelles !
@@ -69,6 +48,8 @@ Normalement ça doit faire des trucs super cools, tu m'en diras des nouvelles !
 **Docker 19.03.2**
 
 
-## Contributeurs
+## Auteur
 
 @Baptiste.R - Baptiste Rogeon, pour vous servir !
+
+*NOTA : $ = bash || # = root*
