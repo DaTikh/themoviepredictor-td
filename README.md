@@ -12,7 +12,7 @@ Pour cloner le repo sur ta machine :
   $ git clone https://github.com/DaTikh/themoviepredictor-td.git
 ```
 
-Ensuite il te faudra renommer le fichier `auth_sample.env` en `auth.env` et y renseigner tes clés d'API, ainsi que les valeurs des variables d'environnement de ton choix.
+Ensuite il te faudra renommer le fichier `sample.env` en `.env` et y renseigner tes clés d'API, ainsi que les valeurs des variables d'environnement de ton choix.
 
 Enfin, tu pourras lancer le script à l'aide de la commande suivante :
 
@@ -24,7 +24,7 @@ Docker lancera les containers, attendra que la database soit online puis cherche
 
 ## Les commandes qui vont bien pour s'amuser :
 
-En utilisant le fichier `docker-compose.override.yml` (une fois renommé) tu peux tester le script dans ton bash avec par exemple les commandes suivantes...
+En utilisant le fichier `docker-compose.override.yml` (une fois renommé comme tel) tu peux tester le script dans ton bash avec par exemple les commandes suivantes...
 
 ```
   $ docker-compose exec app bash
