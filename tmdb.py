@@ -1,11 +1,15 @@
+# -*- coding: utf-8 -*-
+
 import requests
 import datetime
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 from movie import Movie
 from person import Person
 
-TMDB_API_KEY = os.environ['TMDB_API_KEY']
+TMDB_API_KEY = os.getenv('TMDB_API_KEY')
 
 
 class Tmdb(object):
@@ -33,10 +37,10 @@ class Tmdb(object):
     @staticmethod
     def get_people(fullname):
         search_query = fullname.casefold().replace(' ', '+')
-        r = requests.get(f'https://api.themoviedb.org/3/search/person?query={search_query}&api_key={TMDB_API_KEY}').json()
+        r = requests.get(f'https://api.themoviedb.org/3/search/person?query={search_query}&api_key={TMDB_API_KEY}', headers = {"Accept-Language": "fr-FR"}).json()
         if r['results']:
             r = r['results'][0]
-            r = requests.get(f"https://api.themoviedb.org/3/person/{r['id']}?api_key={TMDB_API_KEY}").json()
+            r = requests.get(f"https://api.themoviedb.org/3/person/{r['id']}?api_key={TMDB_API_KEY}", headers = {"Accept-Language": "fr-FR"}).json()
             return Person(
                         imdb_id=r['imdb_id'],
                         firstname=r['name'].split(' ')[0],

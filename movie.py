@@ -1,9 +1,9 @@
 class Movie(object):
 
     def __init__(   self, 
-                    title,
-                    duration,
-                    imdb_id,
+                    title=None,
+                    duration=None,
+                    imdb_id=None,
                     original_title=None,
                     release_date=None,
                     rating="TP",
@@ -13,7 +13,9 @@ class Movie(object):
                     actors=None,
                     directors=None,
                     productors=None,
-                    is_3d=False
+                    is_3d=False,
+                    public_note=None,
+                    press_note=None
                 ):
 
         self.title = title
@@ -29,6 +31,8 @@ class Movie(object):
         self.directors = directors
         self.productors = productors
         self.is_3d = is_3d
+        self.public_note = public_note
+        self.press_note = press_note
 
 
     def total_budget(self):

@@ -11,7 +11,6 @@ from factory import Factory
 from omdb import Omdb
 from tmdb import Tmdb
 
-
 class Parser(object):
     
     def __init__(self):
@@ -22,6 +21,7 @@ class Parser(object):
 The context and action choices are:
     -  contexts : movies, people
     -  actions : find, list, insert, import
+
 ''')
         parser.add_argument('context', choices=['movies', 'people'], help="Context in which we will apply the next action")
         parser.add_argument('action', choices=['find', 'list', 'insert', 'import'], help="Action to perform in the given context")
@@ -105,15 +105,23 @@ The context and action choices are:
 
         parser.add_argument('--api', help="Name of the API (omdb/tmdb)")
         parser.add_argument('--imdbId', help="Id on IMDB")
+        parser.add_argument('--name', help='People name to search')
         parser.add_argument('--file', help="File path")
         args = self.second_parser(parser)
-        if args.api in ['omdb', 'tmdb'] and args.imdbId:
+        if args.api in ['omdb', 'tmdb'] and (args.imdbId or args.name):
             if args.api == 'omdb':
-                result = getattr(Omdb, 'get_' + self.context)(args.imdbId)
+                if args.imdbId:
+                    result = getattr(Omdb, 'get_' + self.context)(args.imdbId)
+                else:
+                    result = getattr(Omdb, 'get_' + self.context)(args.name)
             else:
-                result = getattr(Tmdb, 'get_' + self.context)(args.imdbId)
+                if args.imdbId:
+                    result = getattr(Tmdb, 'get_' + self.context)(args.imdbId)
+                else:
+                    result = getattr(Tmdb, 'get_' + self.context)(args.name)
             last_id = self.db._insert(table=self.context, object=result)
-            print(f"Last insertion id: #{last_id}.")
+            result.id = last_id
+            print(f"Last insertion : id: #{last_id} in table '{self.context}'.")
             print(f"Inserted object: {vars(result)}")
         elif args.file:
             Factory._import_csv(self.context, args.file)

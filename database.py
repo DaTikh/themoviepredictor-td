@@ -1,16 +1,20 @@
+# -*- coding: utf-8 -*-
+
 import mysql.connector
-import json
 import socket
 import time
-
 import os
+import json
 
-MYSQL_TOKEN = os.environ['MYSQL_TOKEN']
+from dotenv import load_dotenv
+load_dotenv()
 
+token = os.getenv('MYSQL_TOKEN')
+MYSQL_TOKEN = json.loads(token)
 
 class Db(object):
 
-    def __init__(self, token=json.loads(MYSQL_TOKEN)):
+    def __init__(self, token=MYSQL_TOKEN):
         self.user = token['user']
         self.password = token['password']
         self.host = token['host']
@@ -48,7 +52,7 @@ class Db(object):
             return False
 
     def connectToDatabase(self):
-        host = 'database'
+        host = MYSQL_TOKEN['host'] or 'localhost'
         while self.isOpen(host, 3306) == False:
             print("En attente de la BDD...")
             time.sleep(5)

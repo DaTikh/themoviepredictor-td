@@ -1,7 +1,7 @@
 # The Movie Predictor
 
 
-## Cher lecteur, je te remercie d'avance du temps précieux que tu passeras à tester ce petit script, have fun ! ;)
+## Cher lecteur·ice, je te remercie d'avance du temps précieux que tu passeras à tester ce petit script, have fun ! ;)
 
 
 ## Pré-requis et installation :
@@ -29,7 +29,7 @@ En utilisant le fichier `docker-compose.override.yml` (une fois renommé) tu peu
 ```
   $ docker-compose exec app bash
   # python app.py movies import --api omdb --imdbId tt0338013
-  # python app.py people import --api tmdb --imdbId "José Garcia"  
+  # python app.py people import --api tmdb --name "José Garcia"  
   # python app.py movies import --file new_movies.csv
   # python app.py people list --export people_list.json
   # python app.py movies list --export movie_list.csv
@@ -45,7 +45,7 @@ Normalement ça doit faire des trucs super cools, tu m'en diras des nouvelles !
 
 **MySQL 8.0.17**
 
-**Docker 19.03.2**
+**Docker 19.03.5**
 
 
 ## Auteur

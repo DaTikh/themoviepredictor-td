@@ -1,12 +1,16 @@
+# -*- coding: utf-8 -*-
+
 import requests
 import datetime
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 from movie import Movie
 from person import Person
 from tmdb import Tmdb
 
-OMDB_API_KEY = os.environ['OMDB_API_KEY']
+OMDB_API_KEY = os.getenv('OMDB_API_KEY')
 
 
 class Omdb(object):
@@ -18,7 +22,7 @@ class Omdb(object):
 
     @staticmethod
     def get_movies(id):
-        r = requests.get(f'http://www.omdbapi.com/?apikey={OMDB_API_KEY}&i={id}').json()
+        r = requests.get(f'http://www.omdbapi.com/?apikey={OMDB_API_KEY}&i={id}', headers = {"Accept-Language": "fr-FR"}).json()
         return Movie(   
                     title=r['Title'],
                     duration=r['Runtime'].split(' ')[0],

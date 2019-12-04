@@ -3,7 +3,6 @@ version: '3.7'
 services:
   app:
     build: .
-    env_file: ./auth.env
     depends_on: 
       - database
     volumes: 
@@ -11,8 +10,8 @@ services:
     networks: 
       - database_net
   database:
+    env_file: .env
     image: mysql:latest
-    env_file: ./auth.env
     networks:
       - database_net
     ports:

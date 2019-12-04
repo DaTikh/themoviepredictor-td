@@ -7,10 +7,10 @@ RUN echo 'fr_FR.UTF-8 UTF-8' >> /etc/locale.gen
 RUN echo 'fr_FR ISO-8859-1' >> /etc/locale.gen
 RUN locale-gen
 
-RUN pip install argparse mysql-connector-python beautifulsoup4 requests
+RUN pip install argparse mysql-connector-python beautifulsoup4 requests python-dotenv
 
 COPY . /usr/src/themoviepredictor
 
 WORKDIR /usr/src/themoviepredictor
 
-CMD python app.py movies import --api omdb --imdbId tt3896198
+# CMD python app.py movies import --api omdb --imdbId tt3896198
