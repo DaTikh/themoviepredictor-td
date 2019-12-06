@@ -15,6 +15,7 @@ CREATE TABLE `movies` (
 	`productors` varchar(255) DEFAULT NULL,
 	`directors` varchar(255) DEFAULT NULL,
 	`public_note` FLOAT DEFAULT NULL,
+	`public_votes` INT DEFAULT NULL,
 	`press_note` FLOAT DEFAULT NULL,
 	PRIMARY KEY (`id`)
 );

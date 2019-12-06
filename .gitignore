@@ -213,3 +213,7 @@ docker-compose.override.yml
 
 .dockerignore
 .vscode
+
+*.gz
+*.csv
+*.tsv

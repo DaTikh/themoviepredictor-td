@@ -1,7 +1,7 @@
 import csv
 import json
 from database import Db
-
+import pandas as pd
 
 class Factory():
 
@@ -29,3 +29,10 @@ class Factory():
             for row in reader:
                 row = dict(row)
                 print(row)
+
+    @staticmethod
+    def _import_tsv(context, file):
+        with open(file, 'r', encoding='utf-8') as tsvfile:
+            f = csv.DictReader(tsvfile, dialect='excel-tab')
+            df = pd.DataFrame.from_dict(f, dtype=str)
+            df.rename(columns={'tconst': 'imdb_id', 'averageRating': 'public_note', 'numVotes': 'public_votes'})
